@@ -7,7 +7,8 @@ import {compile} from './index';
 
 function loadTestdoc(module, filename) {
   let content = fs.readFileSync(filename, 'utf8');
-  return module._compile(compile(content, {name: filename}), filename);
+  let source = compile(content, {filename: filename});
+  return module._compile(source, filename);
 }
 
 require.extensions['.md'] = loadTestdoc;

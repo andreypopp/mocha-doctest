@@ -24,7 +24,7 @@ Ok, this is a test case:
     // Error: ok
 
     `.trim();
-    let code = compile(markdown);
+    let code = compile(markdown, {filename: __filename});
     console.log(code);
   });
 

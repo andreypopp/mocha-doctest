@@ -21,7 +21,8 @@ type JSAST = {
 type MDAST = any;
 
 type Options = $Shape<{
-  name: string
+  name: string,
+  filename: string
 }>;
 
 const REPR_ASSERTION_RE = /^\s*=> /;
@@ -116,7 +117,7 @@ export function compile(source: string, options: Options = {}) {
     importList,
     stmt`
       describe(
-        "${types.stringLiteral(options.name || 'Suite')}",
+        "${types.stringLiteral(options.name || options.filename || 'Suite')}",
         ${caseExpression(caseList)}
       );
     `
@@ -125,7 +126,10 @@ export function compile(source: string, options: Options = {}) {
   // apply babel transformations
   // TODO: how to make it pickup .babelrc?
   program = types.program(program);
-  program = BabelCore.transformFromAst(program, undefined, {presets: ['es2015']}).ast;
+  program = BabelCore.transformFromAst(program, undefined, {
+    babelrc: true,
+    filename: options.filename,
+  }).ast;
 
   return generate(program).code;
 }
