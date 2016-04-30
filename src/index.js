@@ -167,17 +167,17 @@ function caseExpression(body) {
 
 function parseExpectationFromNode(node, assertion) {
   let firstLine = node.trailingComments[0].value;
-  let restLines = node.trailingComments.slice(1).map(comment => comment.value);
+  let restLines = node.trailingComments.slice(1).map(comment => comment.value.slice(1));
   if (assertion === 'repr') {
     firstLine = firstLine.replace(REPR_ASSERTION_RE, '');
-    let repr = [firstLine].concat(restLines).join('');
+    let repr = [firstLine].concat(restLines).join('\n');
     return {
       repr: types.stringLiteral(repr)
     };
   } else if (assertion === 'error') {
     let name = ERR_ASSSERTION_RE.exec(firstLine)[1];
     let message = firstLine.replace(ERR_ASSSERTION_RE, '');
-    message = [message].concat(restLines).join('');
+    message = [message].concat(restLines).join('\n');
     return {
       name: types.stringLiteral(name),
       message: types.stringLiteral(message),
