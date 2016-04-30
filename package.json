@@ -15,7 +15,9 @@
     },
     "globals": {
       "expr": true,
-      "stmt": true
+      "stmt": true,
+      "$Shape": true
+    }
     }
   },
   "repository": {
