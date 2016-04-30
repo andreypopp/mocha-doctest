@@ -1,5 +1,6 @@
 /**
  * @copyright 2016-present, Andrey Popp <8mayday@gmail.com>
+ * @flow
  */
 
 import generate from 'babel-generator';
@@ -13,7 +14,11 @@ import visitNode from 'unist-util-visit';
 const TESTDOC_SEEN = '__TESTDOC_SEEN';
 const RUNTIME = require.resolve('./runtime');
 
-export function compile(source, options = {}) {
+type Options = $Shape<{
+  name: string
+}>;
+
+export function compile(source: string, options: Options = {}) {
   let node = Remark.parse(source);
   let testCases = [];
 
