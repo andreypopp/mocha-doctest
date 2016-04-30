@@ -42,8 +42,6 @@ export function compile(source, options = {}) {
 
       enter(path) {
         if (!path.node[TESTDOC_SEEN] && isAssertionNode(path.node)) {
-          let assertion = stmt`
-          `;
           let nodes = stmt`
             it("${types.stringLiteral(testCase.title || 'works')}", function() {
               __testdocRuntime.assertRepr(
@@ -81,7 +79,6 @@ export function compile(source, options = {}) {
   program = types.program(program);
   program = BabelCore.transformFromAst(program, undefined, {presets: ['es2015']}).ast;
 
-  console.log(generate(program).code);
   return generate(program).code;
 }
 
@@ -90,8 +87,8 @@ const ASSERTION_RE = /^\s*=> /;
 function parseExpectationFromNode(node) {
   let val = [
     node.trailingComments[0].value.replace(ASSERTION_RE, ''),
-    node.trailingComments.slice(1).map(commment => comment.value)
-  ].join('')
+    node.trailingComments.slice(1).map(comment => comment.value)
+  ].join('');
   return types.stringLiteral(val);
 }
 

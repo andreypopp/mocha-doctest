@@ -2,7 +2,7 @@
  * @copyright 2016-present, Andrey Popp <8mayday@gmail.com>
  */
 
-import assert from 'assert';
+// import assert from 'assert';
 import {compile} from '../index';
 
 describe('testdoc', function() {
