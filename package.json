@@ -1,13 +1,12 @@
 {
   "name": "testdoc",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Test your documentation",
   "main": "./index.js",
   "scripts": {
     "test": "make lint check test"
   },
-  "babel": {
-  },
+  "babel": {},
   "eslintConfig": {
     "extends": "prometheusresearch",
     "env": {
