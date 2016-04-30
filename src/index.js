@@ -11,17 +11,30 @@ import traverse from 'babel-traverse';
 import * as Babylon from 'babylon';
 import visitNode from 'unist-util-visit';
 
-const TESTDOC_SEEN = '__TESTDOC_SEEN';
-const RUNTIME = require.resolve('./runtime');
+type JSASTComment = {
+  value: string;
+};
+type JSAST = {
+  trailingComments: ?Array<JSASTComment>;
+};
+
+type MDAST = any;
 
 type Options = $Shape<{
   name: string
 }>;
 
-export function compile(source: string, options: Options = {}) {
-  let node = Remark.parse(source);
-  let testCases = [];
+const REPR_ASSERTION_RE = /^\s*=> /;
+const ERR_ASSSERTION_RE = /^\s([a-zA-Z]*Error): /;
 
+const TESTDOC_SEEN = '__TESTDOC_SEEN';
+const RUNTIME = require.resolve('./runtime');
+
+export function compile(source: string, options: Options = {}) {
+
+  // Find all code blocks in markdown
+  let node = Remark.parse(source);
+  let testCaseList = [];
   visitNode(node, 'code', (node, index, parent) => {
     let prev = parent.children[index - 1];
     let title = null;
@@ -31,30 +44,43 @@ export function compile(source: string, options: Options = {}) {
     if (title && title[title.length - 1] === ':') {
       title = title.slice(0, title.length - 1);
     }
-    testCases.push({
+    testCaseList.push({
       title: title,
       lang: node.lang,
       value: node.value
     });
   });
 
+  // Find all assertions within code blocks and generate case and import nodes
+  // from them.
   let importList = [];
-  let body = [];
-
-  testCases.forEach(testCase => {
+  let caseList = [];
+  testCaseList.forEach(testCase => {
     let node = Babylon.parse(testCase.value, {allowImportExportEverywhere: true});
+    let assertions = [];
     traverse(node, {
 
       enter(path) {
-        if (!path.node[TESTDOC_SEEN] && isAssertionNode(path.node)) {
-          let nodes = stmt`
-            it("${types.stringLiteral(testCase.title || 'works')}", function() {
+        let assertion = findAssertion(path.node);
+        if (!path.node[TESTDOC_SEEN] && assertion) {
+          let nodes;
+          if (assertion === 'repr') {
+            let {repr} = parseExpectationFromNode(path.node, assertion);
+            nodes = stmt`
               __testdocRuntime.assertRepr(
                 ${path.node.expression},
-                "${parseExpectationFromNode(path.node)}"
+                "${repr}"
               );
-            });
-          `;
+            `;
+          } else if (assertion === 'error') {
+            let {name, message} = parseExpectationFromNode(path.node, assertion);
+            nodes = stmt`
+              __testdocRuntime.assertError(
+                () => ${path.node.expression},
+                "${name}", "${message}"
+              );
+            `;
+          }
           nodes[TESTDOC_SEEN] = true;
           path.replaceWithMultiple(nodes);
         } else if (types.isImportDeclaration(path.node)) {
@@ -65,11 +91,15 @@ export function compile(source: string, options: Options = {}) {
 
     });
 
-    body = body.concat(node.program.body);
+    caseList = caseList.concat(stmt`
+      it(
+        "${types.stringLiteral(testCase.title || 'works')}",
+        ${caseExpression(node.program.body)}
+      );
+    `);
   });
 
-  let suite = types.functionExpression(null, [], types.blockStatement(body));
-
+  // generate program
   let program = [];
   program = program.concat(
     stmt`
@@ -78,35 +108,63 @@ export function compile(source: string, options: Options = {}) {
     `,
     importList,
     stmt`
-      describe("${types.stringLiteral(options.name || 'Suite')}", ${suite});
+      describe(
+        "${types.stringLiteral(options.name || 'Suite')}",
+        ${caseExpression(caseList)}
+      );
     `
   );
+
+  // apply babel transformations
+  // TODO: how to make it pickup .babelrc?
   program = types.program(program);
   program = BabelCore.transformFromAst(program, undefined, {presets: ['es2015']}).ast;
 
   return generate(program).code;
 }
 
-const ASSERTION_RE = /^\s*=> /;
-
-function parseExpectationFromNode(node) {
-  let val = [
-    node.trailingComments[0].value.replace(ASSERTION_RE, ''),
-    node.trailingComments.slice(1).map(comment => comment.value)
-  ].join('');
-  return types.stringLiteral(val);
+function caseExpression(body) {
+  return types.functionExpression(null, [], types.blockStatement(body));
 }
 
-function isAssertionNode(node) {
-  return (
+function parseExpectationFromNode(node, assertion) {
+  let firstLine = node.trailingComments[0].value;
+  let restLines = node.trailingComments.slice(1).map(comment => comment.value);
+  if (assertion === 'repr') {
+    firstLine = firstLine.replace(REPR_ASSERTION_RE, '');
+    let repr = [firstLine].concat(restLines).join('');
+    return {
+      repr: types.stringLiteral(repr)
+    };
+  } else if (assertion === 'error') {
+    let name = ERR_ASSSERTION_RE.exec(firstLine)[1];
+    let message = firstLine.replace(ERR_ASSSERTION_RE, '');
+    message = [message].concat(restLines).join('');
+    return {
+      name: types.stringLiteral(name),
+      message: types.stringLiteral(message),
+    };
+  }
+}
+
+function findAssertion(node: JSAST): false | 'repr' | 'error' {
+  if (
     types.isExpressionStatement(node) &&
     node.trailingComments &&
-    node.trailingComments.length > 0 &&
-    ASSERTION_RE.exec(node.trailingComments[0].value)
-  );
+    node.trailingComments.length > 0
+  ) {
+    let firstLine = node.trailingComments[0].value;
+    if (REPR_ASSERTION_RE.exec(firstLine)) {
+      return 'repr';
+    } else if (ERR_ASSSERTION_RE.exec(firstLine)) {
+      return 'error';
+    }
+  } else {
+    return false;
+  }
 }
 
-function renderText(node) {
+function renderText(node: MDAST): ?string {
   if (node.value) {
     return node.value;
   } else if (node.children) {

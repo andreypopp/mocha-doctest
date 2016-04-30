@@ -17,8 +17,15 @@ Ok, this is a test case:
     sum(2, 2)
     // => 4
 
+    sum(1, 2)
+    // => 3
+
+    sum(null, null)
+    // Error: ok
+
     `.trim();
-    compile(markdown);
+    let code = compile(markdown);
+    console.log(code);
   });
 
 });
