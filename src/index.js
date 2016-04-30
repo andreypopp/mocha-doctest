@@ -3,6 +3,7 @@
  * @flow
  */
 
+import path from 'path';
 import generate from 'babel-generator';
 import * as BabelCore from 'babel-core';
 import * as types from 'babel-types';
@@ -10,6 +11,7 @@ import * as Remark from 'remark';
 import traverse from 'babel-traverse';
 import * as Babylon from 'babylon';
 import visitNode from 'unist-util-visit';
+import findPackageJSON from 'find-package-json';
 
 type JSASTComment = {
   value: string;
@@ -65,7 +67,6 @@ export function compile(source: string, options: Options = {}) {
   let caseList = [];
   testCaseList.forEach(testCase => {
     let node = Babylon.parse(testCase.value, {allowImportExportEverywhere: true});
-    let assertions = [];
     traverse(node, {
 
       enter(path) {
@@ -89,6 +90,7 @@ export function compile(source: string, options: Options = {}) {
               );
             `;
           }
+          // $FlowIssue: ..
           nodes[TESTDOC_SEEN] = true;
           path.replaceWithMultiple(nodes);
         } else if (types.isImportDeclaration(path.node)) {
@@ -123,12 +125,37 @@ export function compile(source: string, options: Options = {}) {
     `
   );
 
+  let packageJSONCache = {};
+
   // apply babel transformations
-  // TODO: how to make it pickup .babelrc?
   program = types.program(program);
   program = BabelCore.transformFromAst(program, undefined, {
     babelrc: true,
     filename: options.filename,
+    resolveModuleSource(source, filename) {
+      let dirname = path.dirname(filename);
+      if (packageJSONCache[dirname] === undefined) {
+        packageJSONCache[dirname] = findPackageJSON(dirname).next().value || null;
+      }
+      if (packageJSONCache[dirname] != null) {
+        let packageJSON = packageJSONCache[dirname];
+        if (source === packageJSON.name) {
+          let packageDirname = path.relative(
+            dirname,
+            path.dirname(packageJSON.__path)
+          ) || '.';
+          return packageDirname + '/';
+        }
+        if (source.indexOf(packageJSON.name + '/') === 0) {
+          let packageDirname = path.relative(
+            dirname,
+            path.dirname(packageJSON.__path)
+          ) || '.';
+          return packageDirname + source.slice(packageJSON.name.length);
+        }
+      }
+      return source;
+    }
   }).ast;
 
   return generate(program).code;
@@ -169,6 +196,8 @@ function findAssertion(node: JSAST): false | 'repr' | 'error' {
       return 'repr';
     } else if (ERR_ASSSERTION_RE.exec(firstLine)) {
       return 'error';
+    } else {
+      return false;
     }
   } else {
     return false;

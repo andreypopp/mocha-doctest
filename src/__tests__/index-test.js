@@ -5,6 +5,8 @@
 // import assert from 'assert';
 import {compile} from '../index';
 
+let fence = '```';
+
 describe('testdoc', function() {
 
   it('compiles markdown to mocha test suites', function() {
@@ -12,20 +14,25 @@ describe('testdoc', function() {
 
 Ok, this is a test case:
 
-    let sum = (x, y) => x + y;
+${fence}js+test
+let sum = (x, y) => x + y;
 
-    sum(2, 2)
-    // => 4
+sum(2, 2)
+// => 4
 
-    sum(1, 2)
-    // => 3
+sum(1, 2)
+// => 3
 
-    sum(null, null)
-    // Error: ok
+sum(null, null)
+// Error: ok
 
-    `.trim();
+import some from "./some";
+import testdocSome from "testdoc/some";
+import testdoc from "testdoc";
+${fence}
+`.trim();
     let code = compile(markdown, {filename: __filename});
-    console.log(code);
+    console.log(code); // eslint-disable-line no-console
   });
 
 });

@@ -23,13 +23,16 @@ test-unit::
 test-doc:: build
 	@$(BIN)/mocha $(MOCHA_OPTS) --compilers md:./lib/register ./README.md
 
+ci-doc:: build
+	@$(BIN)/mocha $(MOCHA_OPTS) --compilers md:./lib/register -w ./README.md
+
 ci::
 	@$(BIN)/mocha $(MOCHA_OPTS) --watch --watch-extensions json,md $(TESTS)
 
 sloc::
 	@$(BIN)/sloc -e __tests__ src
 
-version-major version-minor version-patch:: lint check test
+version-major version-minor version-patch:: lint test
 	@npm version $(@:version-%=%)
 
 publish:: build
