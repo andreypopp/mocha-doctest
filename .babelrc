@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    "ast-literal"
+  ],
+  "presets": [
+    "prometheusresearch"
+  ]
+}
