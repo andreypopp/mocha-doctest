@@ -1,16 +1,64 @@
 # testdoc
 
-Compiler from markdown to mocha test suites.
+Test your documentation.
 
-Write your tests like:
+Snippets like this:
 
-    Function `sum` calculates a sum of two numbers:
+    Ok, let's test addition:
 
-        import sum from 'mylibrary/sum'
+    ```js+test
+    2 + 2
+    // => 4
+    ```
 
-        sum(2, 2)
-        // => 4
+are coverted into runnable Mocha test suites which can be tested with the
+following command:
 
-The run them with mocha:
+```
+% mocha --compilers md:testdoc/register ./README.md
+```
 
-    % mocha --compilers md:testdoc/register
+## Installation & Usage
+
+Install with:
+
+```
+% npm install testdoc mocha
+```
+
+Run with:
+
+```
+% mocha --compilers md:testdoc/register ./README.md
+```
+
+## Assertions against text representation
+
+Trailing comments which starts with `=>` are treated as assertions against
+textual representation of an expression which goes before:
+
+```js+test
+2 + 2
+// => 4
+```
+
+## Regular assertions
+
+Also `assert` Node.js module is available so you can use it directly:
+
+```js+test
+assert(2 + 2 === 4)
+```
+
+## Assertions for errors
+
+If trailing comment is detected and start with `Error:` (actually any error name
+which ends with `Error` suffix) line then it is treated as an assertion against
+an error being thrown:
+
+```js+test
+let maybeFunction = undefined;
+
+undefined()
+// TypeError: undefined is not a function
+```

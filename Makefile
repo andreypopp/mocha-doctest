@@ -15,8 +15,13 @@ lint::
 check::
 	@$(BIN)/flow --show-all-errors src
 
-test::
+test:: test-unit test-doc
+
+test-unit::
 	@$(BIN)/mocha $(MOCHA_OPTS) $(TESTS)
+
+test-doc:: build
+	@$(BIN)/mocha $(MOCHA_OPTS) --compilers md:./lib/register ./README.md
 
 ci::
 	@$(BIN)/mocha $(MOCHA_OPTS) --watch --watch-extensions json,md $(TESTS)

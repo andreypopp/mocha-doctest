@@ -30,6 +30,11 @@ const ERR_ASSSERTION_RE = /^\s([a-zA-Z]*Error): /;
 const TESTDOC_SEEN = '__TESTDOC_SEEN';
 const RUNTIME = require.resolve('./runtime');
 
+const SUPPORTED_LANG = {
+  'js+test': true,
+  'javasctipt+test': true,
+};
+
 export function compile(source: string, options: Options = {}) {
 
   // Find all code blocks in markdown
@@ -44,11 +49,13 @@ export function compile(source: string, options: Options = {}) {
     if (title && title[title.length - 1] === ':') {
       title = title.slice(0, title.length - 1);
     }
-    testCaseList.push({
-      title: title,
-      lang: node.lang,
-      value: node.value
-    });
+    if (SUPPORTED_LANG[node.lang]) {
+      testCaseList.push({
+        title: title,
+        lang: node.lang,
+        value: node.value
+      });
+    }
   });
 
   // Find all assertions within code blocks and generate case and import nodes
