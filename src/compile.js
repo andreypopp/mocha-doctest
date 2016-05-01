@@ -10,7 +10,8 @@ import * as types from 'babel-types';
 import * as Remark from 'remark';
 import traverse from 'babel-traverse';
 import * as Babylon from 'babylon';
-import visitNode from 'unist-util-visit';
+import mdastVisitNode from 'unist-util-visit';
+import mdastToString from 'mdast-util-to-string';
 import findPackageJSON from 'find-package-json';
 
 type JSASTComment = {
@@ -44,11 +45,11 @@ export function compile(source: string, options: Options = {}) {
   // Find all code blocks in markdown
   let node = Remark.parse(source);
   let testCaseList = [];
-  visitNode(node, 'code', (node, index, parent) => {
+  mdastVisitNode(node, 'code', (node, index, parent) => {
     let prev = parent.children[index - 1];
     let title = null;
     if (prev && prev.type === 'paragraph') {
-      title = renderText(prev);
+      title = mdastToString(prev);
     }
     if (title && title[title.length - 1] === ':') {
       title = title.slice(0, title.length - 1);
@@ -210,15 +211,5 @@ function findAssertion(node: JSAST): false | 'repr' | 'error' {
     }
   } else {
     return false;
-  }
-}
-
-function renderText(node: MDAST): ?string {
-  if (node.value) {
-    return node.value;
-  } else if (node.children) {
-    return node.children.map(renderText).join('');
-  } else {
-    return null;
   }
 }
