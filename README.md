@@ -15,7 +15,7 @@ are coverted into runnable Mocha test suites which can be tested with the
 following command:
 
 ```
-% mocha --compilers md:mocha-doctest/register ./README.md
+% mocha --compilers md:mocha-doctest ./README.md
 ```
 
 ## Installation & Usage
@@ -29,7 +29,7 @@ Install with:
 Run with:
 
 ```
-% mocha --compilers md:mocha-doctest/register ./README.md
+% mocha --compilers md:mocha-doctest ./README.md
 ```
 
 ## Assertions against text representation
