@@ -81,3 +81,14 @@ function sleep(ms) {
 await sleep(50).then(_ => 42);
 // => 42
 ```
+
+## Using wildcard pattern
+
+You can use `...` specify a wildcards:
+
+```js+test
+let a = [1, 2, Math.random(), 4];
+
+a
+// => [ 1, 2, ..., 4 ]
+```
