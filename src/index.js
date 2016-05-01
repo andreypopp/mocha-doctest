@@ -66,7 +66,14 @@ export function compile(source: string, options: Options = {}) {
   let importList = [];
   let caseList = [];
   testCaseList.forEach(testCase => {
-    let node = Babylon.parse(testCase.value, {allowImportExportEverywhere: true});
+    let src = testCase.value;
+    src = `async function testcase() {
+      ${src}
+    }`;
+    let node = Babylon.parse(src, {
+      allowImportExportEverywhere: true,
+      plugins: ['flow', 'objectRestSpread', 'asyncFunctions'],
+    });
     traverse(node, {
 
       enter(path) {
@@ -104,7 +111,7 @@ export function compile(source: string, options: Options = {}) {
     caseList = caseList.concat(stmt`
       it(
         "${types.stringLiteral(testCase.title || 'works')}",
-        ${caseExpression(node.program.body)}
+        ${caseExpression(node.program.body[0].body.body, {async: true})}
       );
     `);
   });
@@ -113,6 +120,7 @@ export function compile(source: string, options: Options = {}) {
   let program = [];
   program = program.concat(
     stmt`
+      import 'babel-polyfill';
       import * as __testdocRuntime from '${types.stringLiteral(RUNTIME)}';
       import assert from 'assert';
     `,
@@ -161,8 +169,8 @@ export function compile(source: string, options: Options = {}) {
   return generate(program).code;
 }
 
-function caseExpression(body) {
-  return types.functionExpression(null, [], types.blockStatement(body));
+function caseExpression(body, options = {async: false}) {
+  return types.functionExpression(null, [], types.blockStatement(body), false, options.async);
 }
 
 function parseExpectationFromNode(node, assertion) {

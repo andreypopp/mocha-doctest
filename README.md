@@ -62,3 +62,22 @@ let maybeFunction = undefined;
 undefined()
 // TypeError: undefined is not a function
 ```
+
+## Testing async code (with Promise based API)
+
+There's a possibility to test async code based on Promise API:
+
+```js+test
+function sleep(ms) {
+  let promise = new Promise(resolve => setTimeout(resolve, ms));
+  promise = promise.then(value => {
+    value;
+    // => undefined
+    return value;
+  });
+  return promise;
+}
+
+await sleep(50).then(_ => 42);
+// => 42
+```
