@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+MOCHA=`node -p 'require.resolve("mocha/bin/mocha")'`
+MOCHA_DOCTEST=`node -p 'require.resolve("mocha-doctest")'`
+exec $MOCHA --compilers md:mocha-doctest $*

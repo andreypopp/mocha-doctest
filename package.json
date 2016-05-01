@@ -3,6 +3,9 @@
   "version": "0.2.1",
   "description": "Test your documentation",
   "main": "./index.js",
+  "bin": {
+    "mocha-doctest": "bin/mocha-doctest"
+  },
   "scripts": {
     "test": "make lint check test"
   },
