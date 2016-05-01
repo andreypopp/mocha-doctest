@@ -32,6 +32,7 @@ const ERR_ASSSERTION_RE = /^\s([a-zA-Z]*Error): /;
 
 const TESTDOC_SEEN = '__TESTDOC_SEEN';
 const RUNTIME = require.resolve('./runtime');
+const POLYFILL = require.resolve('babel-polyfill');
 
 const SUPPORTED_LANG = {
   'js+test': true,
@@ -120,7 +121,7 @@ export function compile(source: string, options: Options = {}) {
   let program = [];
   program = program.concat(
     stmt`
-      import 'babel-polyfill';
+      import '${types.stringLiteral(POLYFILL)}';
       import * as __MochaDoctestRuntime from '${types.stringLiteral(RUNTIME)}';
       import assert from 'assert';
     `,
