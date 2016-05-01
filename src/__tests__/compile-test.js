@@ -2,8 +2,7 @@
  * @copyright 2016-present, Andrey Popp <8mayday@gmail.com>
  */
 
-// import assert from 'assert';
-import {compile} from '../index';
+import {compile} from '../compile';
 
 let fence = '```';
 

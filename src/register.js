@@ -3,7 +3,7 @@
  */
 
 import fs from 'fs';
-import {compile} from './index';
+import {compile} from './compile';
 
 function loadTestdoc(module, filename) {
   let content = fs.readFileSync(filename, 'utf8');
