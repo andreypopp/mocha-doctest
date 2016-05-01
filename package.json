@@ -1,5 +1,5 @@
 {
-  "name": "testdoc",
+  "name": "mocha-doctest",
   "version": "0.2.1",
   "description": "Test your documentation",
   "main": "./index.js",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andreypopp/testdoc.git"
+    "url": "git+https://github.com/andreypopp/mocha-doctest.git"
   },
   "keywords": [
     "doctest",
@@ -29,9 +29,9 @@
   "author": "Andrey Popp <8mayday@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andreypopp/testdoc/issues"
+    "url": "https://github.com/andreypopp/mocha-doctest/issues"
   },
-  "homepage": "https://github.com/andreypopp/testdoc#readme",
+  "homepage": "https://github.com/andreypopp/mocha-doctest#readme",
   "dependencies": {
     "babel-core": "^6.7.7",
     "babel-generator": "^6.7.7",

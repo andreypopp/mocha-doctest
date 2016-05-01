@@ -83,7 +83,7 @@ export function compile(source: string, options: Options = {}) {
           if (assertion === 'repr') {
             let {repr} = parseExpectationFromNode(path.node, assertion);
             nodes = stmt`
-              __testdocRuntime.assertRepr(
+              __MochaDoctestRuntime.assertRepr(
                 ${path.node.expression},
                 "${repr}"
               );
@@ -91,7 +91,7 @@ export function compile(source: string, options: Options = {}) {
           } else if (assertion === 'error') {
             let {name, message} = parseExpectationFromNode(path.node, assertion);
             nodes = stmt`
-              __testdocRuntime.assertError(
+              __MochaDoctestRuntime.assertError(
                 () => ${path.node.expression},
                 "${name}", "${message}"
               );
@@ -121,7 +121,7 @@ export function compile(source: string, options: Options = {}) {
   program = program.concat(
     stmt`
       import 'babel-polyfill';
-      import * as __testdocRuntime from '${types.stringLiteral(RUNTIME)}';
+      import * as __MochaDoctestRuntime from '${types.stringLiteral(RUNTIME)}';
       import assert from 'assert';
     `,
     importList,

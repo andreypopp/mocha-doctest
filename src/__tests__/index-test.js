@@ -7,7 +7,7 @@ import {compile} from '../index';
 
 let fence = '```';
 
-describe('testdoc', function() {
+describe('mocha-doctest', function() {
 
   it('compiles markdown to mocha test suites', function() {
     let markdown = `
@@ -27,8 +27,8 @@ sum(null, null)
 // Error: ok
 
 import some from "./some";
-import testdocSome from "testdoc/some";
-import testdoc from "testdoc";
+import testdocSome from "mocha-doctest/some";
+import testdoc from "mocha-doctest";
 ${fence}
 `.trim();
     let code = compile(markdown, {filename: __filename});

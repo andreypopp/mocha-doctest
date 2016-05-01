@@ -1,4 +1,4 @@
-# testdoc
+# mocha-doctest
 
 Test your documentation.
 
@@ -15,7 +15,7 @@ are coverted into runnable Mocha test suites which can be tested with the
 following command:
 
 ```
-% mocha --compilers md:testdoc/register ./README.md
+% mocha --compilers md:mocha-doctest/register ./README.md
 ```
 
 ## Installation & Usage
@@ -23,13 +23,13 @@ following command:
 Install with:
 
 ```
-% npm install testdoc mocha
+% npm install mocha-doctest mocha
 ```
 
 Run with:
 
 ```
-% mocha --compilers md:testdoc/register ./README.md
+% mocha --compilers md:mocha-doctest/register ./README.md
 ```
 
 ## Assertions against text representation
