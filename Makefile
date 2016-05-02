@@ -4,7 +4,7 @@ BIN           = ./node_modules/.bin
 TESTS         = $(shell find src -path '*/__tests__/*-test.js')
 SRC           = $(filter-out $(TESTS) $(FIXTURES), $(shell find src -name '*.js'))
 LIB           = $(SRC:src/%=lib/%)
-MOCHA_OPTS    = -R dot --require babel-core/register
+MOCHA_OPTS    = -R dot --require babel-core/register --timeout 4000
 
 build::
 	@$(MAKE) -j 8 $(LIB)

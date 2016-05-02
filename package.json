@@ -7,7 +7,7 @@
     "mocha-doctest": "bin/mocha-doctest"
   },
   "scripts": {
-    "test": "make lint check test"
+    "test": "make lint test"
   },
   "babel": {},
   "eslintConfig": {

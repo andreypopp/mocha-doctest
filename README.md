@@ -1,5 +1,7 @@
 # mocha-doctest
 
+[![Travis build status](https://img.shields.io/travis/andreypopp/mocha-doctest/master.svg)](https://travis-ci.org/andreypopp/validated)
+
 Test your documentation.
 
 Snippets like this:
