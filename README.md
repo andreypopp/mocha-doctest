@@ -95,3 +95,9 @@ let a = [1, 2, Math.random(), 4];
 a
 // => [ 1, 2, ..., 4 ]
 ```
+
+## Babel
+
+Project babel configuration will be used (either `.babelrc` or `"babel"` key in
+`package.json`) but currently at least `es2015` preset must be used as
+mocha-doctest emits ES2015 code. That might change is the future.
