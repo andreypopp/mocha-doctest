@@ -18,19 +18,11 @@ lint::
 check::
 	@$(BIN)/flow --show-all-errors src
 
-test:: test-unit test-doc
-
-test-unit::
-	@$(BIN)/mocha $(MOCHA_OPTS) $(TESTS)
-
-test-doc:: build-silent
+test:: build-silent
 	@$(BIN)/mocha $(MOCHA_OPTS) --compilers md:./lib/register ./README.md
 
-ci-doc::
-	@$(BIN)/mocha $(MOCHA_OPTS) --compilers md:./lib/register -w ./README.md
-
 ci::
-	@$(BIN)/mocha $(MOCHA_OPTS) --watch --watch-extensions json,md $(TESTS)
+	@$(BIN)/mocha $(MOCHA_OPTS) --compilers md:./lib/register -w ./README.md
 
 sloc::
 	@$(BIN)/sloc -e __tests__ src

@@ -101,3 +101,164 @@ a
 Project babel configuration will be used (either `.babelrc` or `"babel"` key in
 `package.json`) but currently at least `es2015` preset must be used as
 mocha-doctest emits ES2015 code. That might change is the future.
+
+# Tests
+
+Import required harness:
+
+```js+test
+import {runTest} from 'mocha-doctest/lib/testutils'
+```
+
+Simple assertions:
+
+```js+test
+let {passes, failures} = runTest(`
+  1
+  // => 1
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+Assertions against an error:
+
+```js+test
+let {passes, failures} = runTest(`
+  undefined()
+  // TypeError: undefined is not a function
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+
+Simple assertion with failure:
+
+```js+test
+let {passes, failures} = runTest(`
+  2 + 2
+  // => 5
+`)
+
+passes.length
+// => 0
+
+failures.length
+// => 1
+
+failures[0].err.expected
+// => '5'
+failures[0].err.actual
+// => '4'
+```
+
+More complex assertions:
+
+```js+test
+let {passes, failures} = runTest(`
+  [1, 2, 3]
+  // => [ 1, 2, 3 ]
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+Assertions which use `...` wildcard:
+
+```js+test
+let {passes, failures} = runTest(`
+  [1, Math.random(), 3]
+  // => [ 1, ..., 3 ]
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+Assertions against an error with `...` wildcard:
+
+```js+test
+let {passes, failures} = runTest(`
+  undefined()
+  // TypeError: ...
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+Assertions which use `...` wildcard (failure):
+
+```js+test
+let {passes, failures} = runTest(`
+  let array = [1, Math.random(), 3]
+
+  array
+  // => [ 1, ..., 4 ]
+`)
+
+passes.length
+// => 0
+
+failures.length
+// => 1
+
+failures[0].err.expected
+// => '[ 1, ..., 4 ]'
+```
+
+Assertions which async code:
+
+```js+test
+let {passes, failures} = runTest(`
+  await 1
+  // => 1
+
+  await Promise.resolve(42)
+  // => 42
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+Assertions within async callbacks:
+
+```js+test
+let {passes, failures} = runTest(`
+  await Promise.resolve(42).then(async value => {
+    value;
+    // => 42
+    await Promise.resolve(43)
+    // => 43
+  })
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
