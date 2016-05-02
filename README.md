@@ -1,6 +1,6 @@
 # mocha-doctest
 
-[![Travis build status](https://img.shields.io/travis/andreypopp/mocha-doctest/master.svg)](https://travis-ci.org/andreypopp/validated)
+[![Travis build status](https://img.shields.io/travis/andreypopp/mocha-doctest/master.svg)](https://travis-ci.org/andreypopp/mocha-doctest)
 
 Test your documentation.
 
