@@ -22,8 +22,12 @@ export function assertError(expression, name, message) {
   try {
     expression();
   } catch(err) {
-    assert.equal(err.name, name);
-    assert.equal(err.message, message);
+    let repr = `${name}: ${message}`
+    let pattern = compilePattern(repr);
+    let r = `${err.name}: ${err.message}`;
+    if (!pattern.exec(r)) {
+      assert.equal(repr, r);
+    }
     return;
   }
   assert(false, 'Missing exception');

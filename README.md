@@ -61,6 +61,9 @@ let maybeFunction = undefined;
 
 undefined()
 // TypeError: undefined is not a function
+
+null()
+// TypeError: ...
 ```
 
 ## Testing async code (with Promise based API)
