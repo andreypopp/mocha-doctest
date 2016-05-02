@@ -2,9 +2,9 @@
  * @copyright 2016-present, Andrey Popp <8mayday@gmail.com>
  */
 
-import {spawnSync} from 'child_process'
-import fs from 'fs'
-import path from 'path'
+import {spawnSync} from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 const REGISTER = require.resolve('../register');
 const CMD = require.resolve('mocha/bin/mocha');
