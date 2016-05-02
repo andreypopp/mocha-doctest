@@ -21,8 +21,6 @@ type JSAST = {
   trailingComments: ?Array<JSASTComment>;
 };
 
-type MDAST = any;
-
 type Options = $Shape<{
   name: string,
   filename: string
