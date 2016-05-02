@@ -244,6 +244,26 @@ failures.length
 // => 0
 ```
 
+Assertions which async code (failures)
+
+```js+test
+let {passes, failures} = runTest(`
+  await Promise.resolve(42)
+  // => 43
+`)
+
+passes.length
+// => 0
+
+failures.length
+// => 1
+
+failures[0].err.expected
+// => '43'
+failures[0].err.actual
+// => '42'
+```
+
 Assertions within async callbacks:
 
 ```js+test
@@ -261,4 +281,39 @@ passes.length
 
 failures.length
 // => 0
+```
+
+Assertions which async code errors:
+
+```js+test
+let {passes, failures} = runTest(`
+  await Promise.reject(new Error('oops'))
+  // Error: oops
+`)
+
+passes.length
+// => 1
+
+failures.length
+// => 0
+```
+
+Assertions which async code errors (failures):
+
+```js+test
+let {passes, failures} = runTest(`
+  await Promise.reject(new Error('oops'))
+  // SomeError: nope
+`)
+
+passes.length
+// => 0
+
+failures.length
+// => 1
+
+failures[0].err.expected
+// => 'SomeError: nope'
+failures[0].err.actual
+// => 'Error: oops'
 ```

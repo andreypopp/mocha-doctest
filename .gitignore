@@ -3,3 +3,4 @@ lib/
 examples/webpack/bundle
 site/bundle
 npm-debug.log
+.testcase.testmd

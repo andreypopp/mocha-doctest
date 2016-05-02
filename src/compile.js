@@ -27,7 +27,7 @@ type Options = $Shape<{
 }>;
 
 const REPR_ASSERTION_RE = /^\s*=> /;
-const ERR_ASSSERTION_RE = /^\s([a-zA-Z]*Error): /;
+const ERR_ASSSERTION_RE = /^\s*([a-zA-Z]*Error): /;
 
 const TESTDOC_SEEN = '__TESTDOC_SEEN';
 const RUNTIME = require.resolve('./runtime');
@@ -91,11 +91,14 @@ export function compile(source: string, options: Options = {}) {
           } else if (assertion === 'error') {
             let {name, message} = parseExpectationFromNode(path.node, assertion);
             nodes = stmt`
-              __MochaDoctestRuntime.assertError(
-                () => ${path.node.expression},
-                "${name}", "${message}"
-              );
+              async function dummy() {
+                await __MochaDoctestRuntime.assertError(
+                  async () => ${path.node.expression},
+                  "${name}", "${message}"
+                );
+              }
             `;
+            nodes = nodes.body.body[0];
           }
           // $FlowIssue: ..
           nodes[TESTDOC_SEEN] = true;

@@ -18,15 +18,15 @@ export function assertRepr(expression, repr) {
   }
 }
 
-export function assertError(expression, name, message) {
+export async function assertError(expression, name, message) {
   try {
-    expression();
+    await expression();
   } catch(err) {
     let repr = `${name}: ${message}`;
     let pattern = compilePattern(repr);
     let r = `${err.name}: ${err.message}`;
     if (!pattern.exec(r)) {
-      assert.equal(repr, r);
+      assert.equal(r, repr);
     }
     return;
   }

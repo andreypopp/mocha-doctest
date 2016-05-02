@@ -16,12 +16,13 @@ export function runTest(source) {
   let filename = path.join(__dirname, '..', '.testcase.testmd');
   try {
     fs.writeFileSync(filename, source);
-    let stdout = spawnSync(CMD, OPTIONS.concat(filename), {
+    let info = spawnSync(CMD, OPTIONS.concat(filename), {
       env: {
         ...process.env,
         MOCHA_DOCTEST_EXT: 'testmd'
       }
-    }).stdout.toString();
+    });
+    let stdout = info.stdout.toString();
     return JSON.parse(stdout);
   } finally {
     fs.unlinkSync(filename);
